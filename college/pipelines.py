@@ -25,9 +25,13 @@ class MajorLinePipeline(object):
         self.client = pymongo.MongoClient(host=self.mongo_uri, port=27017)
         self.db = self.client[self.mongo_db]
         # self.collection = self.db["gapkao_major_3"]
-        self.collection = self.db["gapkao_school_3"]
+        self.collection = self.db["gapkao_school_6"]
 
     def process_item(self, item, spider):
+        try:
+            batch = item["batch"][0]
+        except KeyError:
+            batch = ""
         mongo_item = {
             "school": item["school"][0],
             "province": item["province"][0],
@@ -37,7 +41,7 @@ class MajorLinePipeline(object):
             "max": item["max"][0],
             "average": item["average"][0],
             "count": item["count"][0],
-            "batch": item["batch"][0],
+            "batch": batch,
         }
         self.collection.insert_one(mongo_item)
         return item
